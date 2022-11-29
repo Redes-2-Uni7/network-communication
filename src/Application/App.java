@@ -4,11 +4,15 @@ import Entities.Switch;
 import Entities.Host;
 import Entities.Cable;
 import Entities.Packet;
+import Entities.Router;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        Switch switch1 = new Switch("11:11:11:11:11:11", 3);
+        Router router1 = new Router(Settings.macRouter1, Settings.networkAddress1);
+        Router router2 = new Router(Settings.macRouter2, Settings.networkAddress2);
+
+        Switch switch1 = new Switch(Settings.macSwitch1, 3);
 
         Host h1 = new Host(Settings.ipSource1, Settings.macSource1);
         Host h2 = new Host(Settings.ipSource2, Settings.macSource2);

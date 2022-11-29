@@ -1,7 +1,8 @@
 package Entities;
 
-import java.util.Map;
+import Application.Settings;
 
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +39,8 @@ public class Switch {
     
     public Boolean isPackFromSwitch(Packet pack, Port port) {
         List<String> teste = new ArrayList<>();
-        teste.add("11:11:11:11:11:11");
-        teste.add("22:22:22:22:22:22");
+        teste.add(Settings.macSwitch1);
+        teste.add(Settings.macSwitch2);
         return teste.contains(port.getCable().getPort2().getMac());
     }
     

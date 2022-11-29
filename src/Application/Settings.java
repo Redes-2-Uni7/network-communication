@@ -1,6 +1,16 @@
 package Application;
 
+import Entities.NetworkAddress;
+
 public class Settings {
+    public static final String macSwitch1 = "11:11:11:11:11:11";
+    public static final String macSwitch2 = "22:22:22:22:22:22";
+    public static final String macRouter1 = "AA:AA:AA:AA:AA:AA";
+    public static final String macRouter2 = "BB:BB:BB:BB:BB:BB";
+
+    public static final NetworkAddress networkAddress1 = new NetworkAddress("10.20.30.0", 24);
+    public static final NetworkAddress networkAddress2 = new NetworkAddress("10.20.31.0", 24);
+
     public static final String macBroadcast = "FF:FF:FF:FF:FF:FF";
     public static final String ipUnknown = "255.255.255.255";
 
