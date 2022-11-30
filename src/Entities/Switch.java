@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Switch {
+    private String mac;
     private Map<String, Integer> macTable = new HashMap<>(); //mac e port
     private List<Port> ports = new ArrayList<>();
 
     public Switch(String mac, Integer qtdPorts) {
+        this.mac = mac;
         for(Integer i = 0; i < qtdPorts; i++) {
             ports.add(new Port(mac, this));
         }
@@ -54,7 +56,9 @@ public class Switch {
     }
 
     public void sendMessage(Packet pack) {
-        System.out.println("Enviando pacote pelo switch");
+        System.out.println("Enviando pacote pelo switch" + (mac.equals(Settings.macSwitch1) ? "1" 
+                                                            : mac.equals(Settings.macSwitch2) ? "2" 
+                                                            : "" ));
         pack.print();
         
         Boolean isArp = pack.isBroadcast();
@@ -73,7 +77,13 @@ public class Switch {
         }
         else if (portKnowed(pack))
         {
-            ports.get(macTable.get(pack.getDestinationMac()) - 1).sendMessageByCable(pack);
+            Integer index = null;
+            for (Port k : ports) {
+                if (k.getNumber() == macTable.get(pack.getDestinationMac()))
+                    index = ports.indexOf(k);
+            }
+
+            ports.get(index).sendMessageByCable(pack);
         }
         else {
             broadcast(pack);

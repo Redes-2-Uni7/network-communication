@@ -7,7 +7,7 @@ import Application.Settings;
 public class Host {
     private String ip;
     private String mac;
-    private Map<String, String> macTable = new HashMap<>(); //mac e ip
+    private Map<String, String> macTable = new HashMap<>(); //ip e mac
     private Port port;
 
     public Host(String ip, String mac) {
@@ -52,6 +52,11 @@ public class Host {
         return !pack.getPayload().equals("Arp Reply") && !pack.getPayload().equals("Ack Reply");
     }
 
+    public Boolean isArpRequestFromRouter(Packet pack) {
+        return pack.getPayload().equals("Arp Request") 
+                && (pack.getSourceMac().equals(Settings.macRouter1) || pack.getSourceMac().equals(Settings.macRouter2));
+    }
+
     public Boolean shouldSave(Packet pack) {
         return !macTable.containsKey(pack.getSourceIp());
     }
@@ -60,7 +65,6 @@ public class Host {
         System.out.println("Recebendo pacote pelo host" + (mac.equals(Settings.macSource1) ? "1" 
                                                         : mac.equals(Settings.macSource2) ? "2" 
                                                         : mac.equals(Settings.macSource3) ? "3" 
-                                                        : mac.equals(Settings.macSource4) ? "4" 
                                                         : "" ));
         pack.print();
 
@@ -70,7 +74,7 @@ public class Host {
         if (!isToMe && !isArp) { return; }
 
         if (shouldSave(pack)) {
-            macTable.put(pack.getSourceMac(), pack.getSourceIp());
+            macTable.put(pack.getSourceIp(), pack.getSourceMac());
         }
 
         if (isToMe && needToAnswer(pack)) {
@@ -82,12 +86,44 @@ public class Host {
     }
     
     public void sendMessage(Packet pack) {
-        System.out.println("Enviando pacote pelo host" + (mac.equals(Settings.macSource1) ? "1" 
-                                                        : mac.equals(Settings.macSource2) ? "2" 
-                                                        : mac.equals(Settings.macSource3) ? "3" 
-                                                        : mac.equals(Settings.macSource4) ? "4" 
-                                                        : "" ));
-        pack.print();
-        port.sendMessageByCable(pack);
+        if (pack.isArp()) {
+            System.out.println("Enviando pacote pelo host" + (mac.equals(Settings.macSource1) ? "1" 
+                                                            : mac.equals(Settings.macSource2) ? "2" 
+                                                            : mac.equals(Settings.macSource3) ? "3" 
+                                                            : "" ));
+            pack.print();
+            port.sendMessageByCable(pack);
+        } else if (pack.isAck()) {
+            System.out.println("Enviando pacote pelo host" + (mac.equals(Settings.macSource1) ? "1" 
+                                                            : mac.equals(Settings.macSource2) ? "2" 
+                                                            : mac.equals(Settings.macSource3) ? "3" 
+                                                            : "" ));
+            pack.print();
+            port.sendMessageByCable(pack);
+        } else {
+            Packet packToSendAfterResponse = new Packet(
+                pack.getSourceMac(), 
+                pack.getDestinationMac(), 
+                pack.getSourceIp(), 
+                pack.getDestinationIp(), 
+                pack.getPayload());
+            
+            pack.setPayload("Arp Request");
+            System.out.println("Enviando pacote pelo host" + (mac.equals(Settings.macSource1) ? "1" 
+                                                            : mac.equals(Settings.macSource2) ? "2" 
+                                                            : mac.equals(Settings.macSource3) ? "3" 
+                                                            : "" ));
+            pack.print();
+            port.sendMessageByCable(pack);
+
+            packToSendAfterResponse.setDestinationMac(macTable.get(packToSendAfterResponse.getDestinationIp()));
+
+            System.out.println("Enviando pacote pelo host" + (mac.equals(Settings.macSource1) ? "1" 
+                                                            : mac.equals(Settings.macSource2) ? "2" 
+                                                            : mac.equals(Settings.macSource3) ? "3" 
+                                                            : "" ));
+            packToSendAfterResponse.print();
+            port.sendMessageByCable(packToSendAfterResponse);
+        }
     }
 }

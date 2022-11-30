@@ -63,8 +63,16 @@ public class Packet {
         this.payload = payload;
     }
     
-    public Boolean isBroadcast() { //isBroadcast
+    public Boolean isBroadcast() {
         return this.destinationMac == Settings.macBroadcast;
+    }
+
+    public Boolean isArp() {
+        return this.payload.contains("Arp");
+    }
+
+    public Boolean isAck() {
+        return this.payload.contains("Ack");
     }
 
     public void print() {

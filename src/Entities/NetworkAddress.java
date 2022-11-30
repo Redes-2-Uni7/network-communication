@@ -16,6 +16,11 @@ public class NetworkAddress {
         this.mask = mask;
     }
 
+    @Override
+    public String toString() {
+        return ip + "/" + mask;
+    }
+
     public Boolean networkAddressContainsIp(String ipToVerify) {
         Integer diffInBits = 32 - mask;
         Double hostNumber = Math.pow(2, diffInBits);
